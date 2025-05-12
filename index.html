@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productivity App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#06b6d4">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f7f8fa;
+      margin: 0;
+      padding: 0;
+      color: #23272f;
+    }
+    header {
+      background: #fff;
+      color: #b91c1c;
+      padding: 2.2rem 2.5rem 1.5rem 2.5rem;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      border-bottom: 1px solid #f0f1f3;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.6rem;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      letter-spacing: 0.5px;
+      color: #23272f;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2.5rem auto 0 auto;
+      display: flex;
+      gap: 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .main {
+      flex: 1;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+      padding: 2.5rem 2rem 3.5rem 2rem;
+      min-height: 500px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .tasks-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .tasks-header h2 {
+      color: #b91c1c;
+      font-size: 2rem;
+      font-weight: 400;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    .sections-dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+    .sections-dropdown-btn {
+      background: #f7f8fa;
+      color: #b91c1c;
+      border: none;
+      border-radius: 999px;
+      padding: 0.5rem 1.3rem;
+      font-size: 1.08rem;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      box-shadow: 0 2px 8px rgba(185,28,28,0.04);
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .sections-dropdown-btn:hover {
+      background: #fff0f0;
+      color: #991b1b;
+      box-shadow: 0 4px 16px rgba(185,28,28,0.08);
+    }
+    .arrow-icon {
+      font-size: 1.2rem;
+      margin-left: 0.3rem;
+      transition: transform 0.3s;
+    }
+    .sections-dropdown-list {
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      min-width: 200px;
+      z-index: 10;
+      padding: 0.5rem 0;
+      margin: 0;
+      list-style: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-10px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .sections-dropdown-list.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+      display: block !important;
+    }
+    .sections-dropdown-list li {
+      padding: 0.7rem 1.3rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      color: #b91c1c;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1.05rem;
+    }
+    .sections-dropdown-list li.selected {
+      background: #fff0f0;
+      color: #b91c1c;
+    }
+    .sections-dropdown-list li:hover {
+      background: #f7f8fa;
+      color: #991b1b;
+    }
+    .sections-dropdown-list .section-actions button,
+    .task-actions button,
+    .subtask button {
+      background: none;
+      border: none;
+      color: #06b6d4;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 0.2rem;
+      transition: color 0.2s, background 0.2s;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.1rem;
+      height: 2.1rem;
+    }
+    .sections-dropdown-list .section-actions button:hover,
+    .task-actions button:hover,
+    .subtask button:hover {
+      color: #fff;
+      background: #06b6d4;
+    }
+    .add-section-btn {
+      background: #fff;
+      color: #b91c1c;
+      border: 1.5px solid #b91c1c;
+      border-radius: 999px;
+      padding: 0.5rem 1.3rem;
+      font-size: 1.08rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      box-shadow: 0 2px 8px rgba(185,28,28,0.04);
+    }
+    .add-section-btn:hover {
+      background: #b91c1c;
+      color: #fff;
+      border: 1.5px solid #b91c1c;
+    }
+    .task-list {
+      width: 100%;
+      margin-top: 0.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .task-row {
+      display: flex;
+      align-items: stretch;
+      position: relative;
+    }
+    .timeline {
+      width: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f7f8fa;
+      border: 2.5px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #bdbdbd;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      transition: background 0.2s, border 0.2s, color 0.2s;
+    }
+    .circle.completed {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: #fff;
+    }
+    .vertical-line {
+      width: 4px;
+      background: #22c55e;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .task {
+      background: #f7f8fa;
+      border-radius: 12px;
+      padding: 1.1rem 1.5rem 0.9rem 1.1rem;
+      margin-bottom: 0;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.03);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      flex: 1;
+      min-width: 0;
+      border: 1px solid #f0f1f3;
+      transition: box-shadow 0.2s, border 0.2s;
+    }
+    .task:hover {
+      box-shadow: 0 4px 24px rgba(185,28,28,0.07);
+      border: 1px solid #e5e7eb;
+    }
+    .task-checkbox {
+      margin-top: 0.2rem;
+      accent-color: #b91c1c;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 4px;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      transition: border 0.2s;
+    }
+    .task-checkbox:checked {
+      border: 1.5px solid #b91c1c;
+      background: #fee2e2;
+    }
+    .task-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    .task-title {
+      font-weight: 400;
+      font-size: 1.13rem;
+      margin-bottom: 0.2rem;
+      flex: 1;
+      color: #23272f;
+      word-break: break-word;
+      letter-spacing: 0.1px;
+    }
+    .task.completed .task-title {
+      text-decoration: line-through;
+      color: #bdbdbd;
+    }
+    .subtasks-dropdown {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
+      margin-left: 2.2rem;
+      background: #f7f8fa;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid #f0f1f3;
+      border-top: none;
+    }
+    .subtasks-dropdown.open {
+      max-height: 500px;
+      margin-bottom: 0.3rem;
+    }
+    .subtasks {
+      margin: 0.5rem 0 0.2rem 0.2rem;
+      padding: 0;
+      list-style: none;
+    }
+    .subtask-checkbox {
+      margin-right: 0.7rem;
+      accent-color: #b91c1c;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 4px;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      transition: border 0.2s;
+    }
+    .subtask-checkbox:checked {
+      border: 1.5px solid #b91c1c;
+      background: #fee2e2;
+    }
+    .subtask {
+      display: flex;
+      align-items: center;
+      font-size: 1.01rem;
+      color: #6b7280;
+      margin-bottom: 0.1rem;
+      padding: 0.2rem 0.1rem;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .subtask:hover {
+      background: #f3f4f6;
+    }
+    .task-arrow {
+      font-size: 1.2rem;
+      color: #b91c1c;
+      margin-right: 0.2rem;
+      transition: transform 0.3s;
+    }
+    .task-arrow.open {
+      transform: rotate(180deg);
+    }
+    .task-actions {
+      display: flex;
+      gap: 0.2rem;
+      margin-left: 0.5rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    .task:hover .task-actions {
+      opacity: 1;
+    }
+    .empty-state {
+      color: #bdbdbd;
+      text-align: center;
+      margin-top: 3.5rem;
+      font-size: 1.2rem;
+      letter-spacing: 0.2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .empty-state-illustration {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto;
+      opacity: 0.7;
+    }
+    .add-section-modal, .add-task-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.13);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      animation: fadeInBg 0.3s;
+    }
+    @keyframes fadeInBg {
+      from { background: rgba(0,0,0,0.01); }
+      to { background: rgba(0,0,0,0.13); }
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+      padding: 2.2rem 2.2rem 1.7rem 2.2rem;
+      min-width: 340px;
+      max-width: 95vw;
+      animation: fadeInModal 0.3s;
+    }
+    @keyframes fadeInModal {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-content h2 {
+      color: #b91c1c;
+      margin-top: 0;
+      margin-bottom: 1.2rem;
+      font-size: 1.4rem;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+    }
+    .modal-content input, .modal-content textarea {
+      width: 100%;
+      padding: 0.8rem 1.1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 1.1rem;
+      font-size: 1.05rem;
+      outline: none;
+      background: #f7f8fa;
+      transition: border 0.2s;
+    }
+    .modal-content input:focus, .modal-content textarea:focus {
+      border: 1.5px solid #b91c1c;
+      background: #fff;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.7rem;
+    }
+    .modal-actions button {
+      padding: 0.6rem 1.5rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-weight: 500;
+    }
+    .modal-actions .cancel {
+      background: #f7f8fa;
+      color: #23272f;
+    }
+    .modal-actions .save {
+      background: #b91c1c;
+      color: #fff;
+    }
+    .modal-actions .save:disabled {
+      background: #fca5a5;
+      cursor: not-allowed;
+    }
+    .add-task-btn {
+      background: #b91c1c;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .add-task-btn.fab {
+      position: fixed;
+      bottom: 2.5rem;
+      right: 2.5rem;
+      z-index: 200;
+      width: 60px;
+      height: 60px;
+      font-size: 2.2rem;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+      margin: 0;
+      background: linear-gradient(135deg, #b91c1c 60%, #f43f5e 100%);
+      color: #fff;
+      border: none;
+      outline: none;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    .add-task-btn.fab:hover {
+      box-shadow: 0 12px 32px rgba(244,63,94,0.18);
+      background: linear-gradient(135deg, #f43f5e 60%, #b91c1c 100%);
+    }
+    @media (max-width: 700px) {
+      .container { padding: 0 0.2rem; }
+      .main { padding: 1.2rem 0.5rem 2.5rem 0.5rem; }
+      .modal-content { min-width: 90vw; }
+      .add-task-btn.fab { right: 1.2rem; bottom: 1.2rem; }
+    }
+    .fade-in {
+      animation: fadeIn 0.5s;
+    }
+    .fade-out {
+      animation: fadeOut 0.4s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); height:0; margin:0; padding:0; }
+    }
+    .inline-edit {
+      border: 1.5px solid var(--accent, #06b6d4);
+      border-radius: 7px;
+      padding: 0.2rem 0.7rem;
+      font-size: 1.05rem;
+      outline: none;
+      background: #fff;
+      color: #23272f;
+      margin-right: 0.5rem;
+      min-width: 80px;
+    }
+    .task-row.dragging, .section-dragging {
+      opacity: 0.5;
+      background: #e0f7fa;
+    }
+    .task-row.drag-over, .section-drag-over {
+      border: 2px dashed var(--accent, #06b6d4);
+    }
+    .due-date {
+      font-size: 0.97rem;
+      color: #06b6d4;
+      margin-left: 0.7rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .due-date.overdue {
+      color: #f43f5e;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:1.1rem;">
+      <h1>My Tasks</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:1.2rem;">
+      <input type="color" id="accentColorPicker" title="Pick accent color" style="width:32px;height:32px;border:none;background:none;cursor:pointer;">
+      <button id="themeToggleBtn" title="Toggle dark/light mode" style="background:none;border:none;cursor:pointer;font-size:1.7rem;">🌙</button>
+    </div>
+    <button id="installBtn" style="display:none;position:absolute;top:2.2rem;right:2.5rem;padding:0.5rem 1.3rem;border-radius:999px;background:#fff;color:#23272f;border:1.5px solid #06b6d4;font-weight:600;font-size:1.08rem;cursor:pointer;box-shadow:0 2px 8px rgba(6,182,212,0.08);font-family:'Roboto',sans-serif;letter-spacing:0.02em;transition:background 0.2s,color 0.2s,border 0.2s;">Install</button>
+  </header>
+  <div class="container">
+    <main class="main">
+      <div class="tasks-header" style="flex-direction:column;align-items:stretch;gap:0.5rem;">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <div class="sections-dropdown-container" id="sectionsDropdownContainer">
+            <button class="sections-dropdown-btn" id="sectionsDropdownBtn" onclick="toggleSectionsDropdown()">
+              Sections <span class="arrow-icon" id="sectionsArrow">&#9660;</span>
+            </button>
+            <ul class="sections-dropdown-list" id="sectionsDropdownList" style="display:none;"></ul>
+          </div>
+          <button class="add-section-btn" onclick="openAddSectionModal()">Add Section</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.2rem;margin-top:1.2rem;">
+          <h2 id="mainTitle">My Tasks (Home)</h2>
+          <input id="taskSearchInput" type="text" placeholder="Search tasks..." style="flex:1;max-width:260px;padding:0.5rem 1rem;border-radius:999px;border:1.5px solid #e5e7eb;font-size:1.05rem;background:#f7f8fa;outline:none;transition:border 0.2s;" oninput="renderMainContent()">
+        </div>
+      </div>
+      <div id="mainContent"></div>
+      <div id="progressBarContainer" style="width:100%;margin:1.2rem 0 0.5rem 0;display:none;">
+        <div id="progressBarLabel" style="font-size:0.98rem;color:#888;margin-bottom:0.2rem;"></div>
+        <div style="background:#e5e7eb;border-radius:8px;height:14px;width:100%;overflow:hidden;">
+          <div id="progressBar" style="height:100%;background:linear-gradient(90deg,#06b6d4,#3b82f6);width:0%;transition:width 0.4s;border-radius:8px;"></div>
+        </div>
+      </div>
+      <button class="add-task-btn fab" onclick="openAddTaskModal()">+</button>
+    </main>
+  </div>
+
+  <!-- Add Section Modal -->
+  <div class="add-section-modal" id="addSectionModal" style="display:none;">
+    <div class="modal-content">
+      <h2>Add New Section</h2>
+      <input id="sectionNameInput" type="text" placeholder="e.g., Work, Personal, Shopping" />
+      <div class="modal-actions">
+        <button class="cancel" onclick="closeAddSectionModal()">Cancel</button>
+        <button class="save" id="saveSectionBtn" onclick="saveSection()" disabled>Create Section</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="add-task-modal" id="addTaskModal" style="display:none;">
+    <div class="modal-content">
+      <h2>Create New Task</h2>
+      <input id="mainTaskInput" type="text" placeholder="Enter main task..." />
+      <label style="font-weight:700; color:#b91c1c;">Subtasks</label>
+      <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+        <input id="subtaskInput" type="text" placeholder="Add a new subtask..." />
+        <button class="add-section-btn" style="padding:0 1rem;" onclick="addSubtask()">+</button>
+      </div>
+      <ul id="subtaskList" style="margin-bottom:1rem;"></ul>
+      <div class="modal-actions">
+        <button class="cancel" onclick="closeAddTaskModal()">Cancel</button>
+        <button class="save" id="saveTaskBtn" onclick="saveTask()" disabled>Save Task</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data persistence
+    function getSections() {
+      return JSON.parse(localStorage.getItem('sections') || '[]');
+    }
+    function setSections(sections) {
+      localStorage.setItem('sections', JSON.stringify(sections));
+    }
+    function getTasks() {
+      return JSON.parse(localStorage.getItem('tasks') || '[]');
+    }
+    function setTasks(tasks) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // State
+    let selectedSectionId = null; // null means Home
+    let subtasks = [];
+
+    // Section logic
+    function renderSectionsDropdown() {
+      const dropdown = document.getElementById('sectionsDropdownList');
+      const sections = getSections();
+      dropdown.innerHTML = '';
+      if (sections.length === 0) return;
+      sections.forEach((section, idx) => {
+        const li = document.createElement('li');
+        li.className = (section.id === selectedSectionId ? 'selected' : '');
+        li.draggable = true;
+        li.ondragstart = (e) => startSectionDrag(e, idx);
+        li.ondragover = (e) => sectionDragOver(e, idx);
+        li.ondragend = endSectionDrag;
+        li.ondrop = (e) => sectionDrop(e, idx);
+        // Inline edit or display
+        if (section.editing) {
+          li.innerHTML = `<input class="inline-edit" id="editSectionInput-${section.id}" value="${section.name}" onblur="saveSectionEdit('${section.id}')" onkeydown="if(event.key==='Enter'){saveSectionEdit('${section.id}')}" autofocus />`;
+        } else {
+          li.innerHTML = `<span ondblclick="editSection('${section.id}')">${section.name}</span>`;
+        }
+        // Section actions (delete)
+        const actions = document.createElement('span');
+        actions.className = 'section-actions';
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" rx="10" fill="none"/><path d="M7.5 8.5V14M10 8.5V14M12.5 8.5V14M4.5 5.5H15.5M8.5 5.5V4.5C8.5 4.22386 8.72386 4 9 4H11C11.2761 4 11.5 4.22386 11.5 4.5V5.5M5.5 5.5V15.5C5.5 15.7761 5.72386 16 6 16H14C14.2761 16 14.5 15.7761 14.5 15.5V5.5" stroke="#06b6d4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        delBtn.title = 'Delete section';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          // Remove section from localStorage
+          let sections = getSections();
+          sections = sections.filter(s => s.id !== section.id);
+          setSections(sections);
+          // Remove tasks in this section
+          let tasks = getTasks();
+          tasks = tasks.filter(t => t.sectionId !== section.id);
+          setTasks(tasks);
+          // If the deleted section was selected, reset to Home
+          if (selectedSectionId === section.id) selectedSectionId = null;
+          renderSectionsDropdown();
+          renderMainContent();
+          closeSectionsDropdown();
+        };
+        actions.appendChild(delBtn);
+        li.appendChild(actions);
+        li.onclick = (e) => {
+          // Only select section if not clicking the delete button
+          if (e.target.closest('button')) return;
+          selectedSectionId = section.id;
+          closeSectionsDropdown();
+          renderSectionsDropdown();
+          renderMainContent();
+        };
+        dropdown.appendChild(li);
+      });
+    }
+    function toggleSectionsDropdown() {
+      const dropdown = document.getElementById('sectionsDropdownList');
+      const arrow = document.getElementById('sectionsArrow');
+      if (dropdown.classList.contains('open')) {
+        dropdown.classList.remove('open');
+        arrow.style.transform = '';
+      } else {
+        renderSectionsDropdown();
+        dropdown.classList.add('open');
+        arrow.style.transform = 'rotate(180deg)';
+      }
+    }
+    function closeSectionsDropdown() {
+      const dropdown = document.getElementById('sectionsDropdownList');
+      const arrow = document.getElementById('sectionsArrow');
+      dropdown.classList.remove('open');
+      arrow.style.transform = '';
+    }
+    document.addEventListener('click', function(e) {
+      const btn = document.getElementById('sectionsDropdownBtn');
+      const dropdown = document.getElementById('sectionsDropdownList');
+      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+        closeSectionsDropdown();
+      }
+    });
+
+    // Add Section Modal logic
+    function openAddSectionModal() {
+      document.getElementById('addSectionModal').style.display = 'flex';
+      document.getElementById('sectionNameInput').value = '';
+      document.getElementById('saveSectionBtn').disabled = true;
+      document.getElementById('sectionNameInput').focus();
+    }
+    function closeAddSectionModal() {
+      document.getElementById('addSectionModal').style.display = 'none';
+    }
+    document.getElementById('sectionNameInput').addEventListener('input', function() {
+      document.getElementById('saveSectionBtn').disabled = !this.value.trim();
+    });
+    function saveSection() {
+      const name = document.getElementById('sectionNameInput').value.trim();
+      if (!name) return;
+      const sections = getSections();
+      const id = Date.now().toString();
+      sections.push({ id, name });
+      setSections(sections);
+      selectedSectionId = id;
+      closeAddSectionModal();
+      renderSectionsDropdown();
+      renderMainContent();
+    }
+
+    // Task logic
+    function renderMainContent() {
+      const mainContent = document.getElementById('mainContent');
+      const mainTitle = document.getElementById('mainTitle');
+      let tasks;
+      if (selectedSectionId === null) {
+        mainTitle.textContent = 'My Tasks (Home)';
+        tasks = getTasks().filter(t => !t.sectionId);
+      } else {
+        const sections = getSections();
+        const section = sections.find(s => s.id === selectedSectionId);
+        mainTitle.textContent = section ? section.name : '';
+        tasks = getTasks().filter(t => t.sectionId === selectedSectionId);
+      }
+      // Search/filter
+      const searchVal = document.getElementById('taskSearchInput').value.trim().toLowerCase();
+      if (searchVal) {
+        tasks = tasks.filter(t => t.title.toLowerCase().includes(searchVal) || (t.subtasks && t.subtasks.some(sub => sub.toLowerCase().includes(searchVal))));
+      }
+      if (tasks.length === 0) {
+        mainContent.innerHTML = `<div class="empty-state">
+          <img src="https://img.icons8.com/fluency/96/000000/empty-box.png" class="empty-state-illustration" alt="No tasks">
+          <div>No tasks in this section.<br>Get started by adding one!</div>
+        </div>`;
+        return;
+      }
+      let html = '<div class="task-list">';
+      for (let i = 0; i < tasks.length; i++) {
+        const task = tasks[i];
+        const prevCompleted = i > 0 && tasks[i-1].completed;
+        const nextCompleted = i < tasks.length-1 && tasks[i+1].completed;
+        const hasSubtasks = task.subtasks && task.subtasks.length > 0;
+        const overdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.completed;
+        html += `<div class="task-row fade-in" draggable="true" ondragstart="startTaskDrag(event,${i})" ondragover="taskDragOver(event,${i})" ondragend="endTaskDrag()" ondrop="taskDrop(event,${i})">
+          <div class="timeline">
+            <div class="circle${task.completed ? ' completed' : ''}">${task.completed ? '✓' : ''}</div>
+            ${task.completed && nextCompleted ? `<div class="vertical-line" style="height: 40px; top: 28px; background: #22c55e;"></div>` : ''}
+            ${task.completed && prevCompleted ? `<div class="vertical-line" style="height: 40px; top: -40px; background: #22c55e;"></div>` : ''}
+          </div>
+          <div class="task${task.completed ? ' completed' : ''}">
+            <input type="checkbox" class="task-checkbox" onchange="toggleTaskComplete('${task.id}')"${task.completed ? ' checked' : ''} />
+            <div class="task-title-row" onclick="${hasSubtasks ? `toggleSubtasksDropdown('${task.id}')` : ''}">`;
+        if (task.editing) {
+          html += `<input class="inline-edit" id="editTaskInput-${task.id}" value="${task.title}" onblur="saveTaskEdit('${task.id}')" onkeydown="if(event.key==='Enter'){saveTaskEdit('${task.id}')}" autofocus />`;
+        } else {
+          html += `${hasSubtasks ? `<span class="task-arrow" id="taskArrow-${task.id}">&#9660;</span>` : ''}
+            <div class="task-title" ondblclick="editTask('${task.id}')">${task.title}</div>`;
+        }
+        if (task.dueDate) {
+          html += `<span class="due-date${overdue ? ' overdue' : ''}">🗓️ ${task.dueDate}${overdue ? ' (Overdue)' : ''}</span>`;
+        }
+        html += `</div>
+            <input type="date" class="due-date-picker" id="dueDateInput-${task.id}" value="${task.dueDate || ''}" onchange="setTaskDueDate('${task.id}', this.value)" style="margin-left:0.7rem;">
+            <span class="task-actions">
+              <button title="Edit task" onclick="editTask('${task.id}')" tabindex="0" aria-label="Edit task"><svg width="18" height="18" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.65 4.35a2.121 2.121 0 1 1 3 3L7.5 15.5H4v-3.5l8.65-8.65Z"/></svg></button>
+              <button title="Delete task" onclick="deleteTask('${task.id}')" tabindex="0" aria-label="Delete task"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" rx="10" fill="none"/><path d="M7.5 8.5V14M10 8.5V14M12.5 8.5V14M4.5 5.5H15.5M8.5 5.5V4.5C8.5 4.22386 8.72386 4 9 4H11C11.2761 4 11.5 4.22386 11.5 4.5V5.5M5.5 5.5V15.5C5.5 15.7761 5.72386 16 6 16H14C14.2761 16 14.5 15.7761 14.5 15.5V5.5" stroke="#06b6d4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </span>`;
+        html += `</div></div>`;
+        if (hasSubtasks) {
+          html += `<div class="subtasks-dropdown" id="subtasksDropdown-${task.id}">
+            <ul class="subtasks">`;
+          task.subtasks.forEach((sub, idx) => {
+            html += `<li class="subtask"><input type="checkbox" class="subtask-checkbox" id="subtaskChk-${task.id}-${idx}" onchange="toggleSubtaskComplete('${task.id}',${idx})">${sub}`;
+            html += `<button title="Delete subtask" onclick="deleteSubtask('${task.id}',${idx})" tabindex="0" aria-label="Delete subtask"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" rx="10" fill="none"/><path d="M7.5 8.5V14M10 8.5V14M12.5 8.5V14M4.5 5.5H15.5M8.5 5.5V4.5C8.5 4.22386 8.72386 4 9 4H11C11.2761 4 11.5 4.22386 11.5 4.5V5.5M5.5 5.5V15.5C5.5 15.7761 5.72386 16 6 16H14C14.2761 16 14.5 15.7761 14.5 15.5V5.5" stroke="#06b6d4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+            html += `</li>`;
+          });
+          html += `</ul></div>`;
+        }
+      }
+      html += '</div>';
+      mainContent.innerHTML = html;
+      // Progress bar logic
+      const progressBarContainer = document.getElementById('progressBarContainer');
+      if (tasks.length > 0) {
+        const completed = tasks.filter(t => t.completed).length;
+        const percent = Math.round((completed / tasks.length) * 100);
+        document.getElementById('progressBar').style.width = percent + '%';
+        document.getElementById('progressBarLabel').textContent = `${completed} of ${tasks.length} tasks completed (${percent}%)`;
+        progressBarContainer.style.display = '';
+      } else {
+        progressBarContainer.style.display = 'none';
+      }
+    }
+    function openAddTaskModal() {
+      document.getElementById('addTaskModal').style.display = 'flex';
+      document.getElementById('mainTaskInput').value = '';
+      document.getElementById('subtaskInput').value = '';
+      document.getElementById('saveTaskBtn').disabled = true;
+      subtasks = [];
+      renderSubtasks();
+      document.getElementById('mainTaskInput').focus();
+    }
+    function closeAddTaskModal() {
+      document.getElementById('addTaskModal').style.display = 'none';
+    }
+    document.getElementById('mainTaskInput').addEventListener('input', function() {
+      document.getElementById('saveTaskBtn').disabled = !this.value.trim();
+    });
+    function addSubtask() {
+      const val = document.getElementById('subtaskInput').value.trim();
+      if (!val) return;
+      subtasks.push(val);
+      document.getElementById('subtaskInput').value = '';
+      renderSubtasks();
+    }
+    function renderSubtasks() {
+      const ul = document.getElementById('subtaskList');
+      ul.innerHTML = '';
+      if (subtasks.length === 0) {
+        ul.innerHTML = '<li style="color:#9ca3af;">No subtasks added yet.</li>';
+        return;
+      }
+      subtasks.forEach((sub, idx) => {
+        const li = document.createElement('li');
+        li.textContent = sub;
+        li.className = 'subtask';
+        // Remove subtask button
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" rx="10" fill="none"/><path d="M7.5 8.5V14M10 8.5V14M12.5 8.5V14M4.5 5.5H15.5M8.5 5.5V4.5C8.5 4.22386 8.72386 4 9 4H11C11.2761 4 11.5 4.22386 11.5 4.5V5.5M5.5 5.5V15.5C5.5 15.7761 5.72386 16 6 16H14C14.2761 16 14.5 15.7761 14.5 15.5V5.5" stroke="#06b6d4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        delBtn.style.marginLeft = '0.5rem';
+        delBtn.style.background = 'none';
+        delBtn.style.border = 'none';
+        delBtn.style.color = '#b91c1c';
+        delBtn.style.cursor = 'pointer';
+        delBtn.onclick = () => {
+          subtasks.splice(idx, 1);
+          renderSubtasks();
+        };
+        li.appendChild(delBtn);
+        ul.appendChild(li);
+      });
+    }
+    function saveTask() {
+      const title = document.getElementById('mainTaskInput').value.trim();
+      if (!title) return;
+      const tasks = getTasks();
+      const id = Date.now().toString();
+      const task = { id, sectionId: selectedSectionId, title, subtasks: [...subtasks], completed: false };
+      if (selectedSectionId === null) delete task.sectionId;
+      tasks.push(task);
+      setTasks(tasks);
+      closeAddTaskModal();
+      renderMainContent();
+    }
+    function deleteTask(id) {
+      let tasks = getTasks();
+      tasks = tasks.filter(t => t.id !== id);
+      setTasks(tasks);
+      renderMainContent();
+    }
+    function toggleTaskComplete(id) {
+      let tasks = getTasks();
+      tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      setTasks(tasks);
+      renderMainContent();
+      // Notification logic
+    }
+    function toggleSubtasksDropdown(taskId) {
+      const dropdown = document.getElementById(`subtasksDropdown-${taskId}`);
+      const arrow = document.getElementById(`taskArrow-${taskId}`);
+      if (!dropdown) return;
+      if (dropdown.classList.contains('open')) {
+        dropdown.classList.remove('open');
+        arrow.classList.remove('open');
+      } else {
+        dropdown.classList.add('open');
+        arrow.classList.add('open');
+      }
+    }
+    function toggleSubtaskComplete(taskId, idx) {
+      // You can implement subtask completion persistence here if desired
+    }
+
+    // THEME & ACCENT COLOR LOGIC
+    const defaultAccent = '#06b6d4';
+    function setAccentColor(color) {
+      document.documentElement.style.setProperty('--accent', color);
+      // Update all relevant CSS variables
+      document.querySelectorAll('.task-checkbox, .subtask-checkbox').forEach(el => {
+        el.style.accentColor = color;
+      });
+      document.querySelectorAll('.sections-dropdown-list .section-actions button, .task-actions button, .subtask button').forEach(el => {
+        el.style.color = color;
+      });
+    }
+    document.getElementById('accentColorPicker').addEventListener('input', function() {
+      setAccentColor(this.value);
+      localStorage.setItem('accentColor', this.value);
+    });
+    // On load, set accent color
+    const savedAccent = localStorage.getItem('accentColor') || defaultAccent;
+    document.getElementById('accentColorPicker').value = savedAccent;
+    setAccentColor(savedAccent);
+
+    // Dark/Light mode
+    function setTheme(mode) {
+      if (mode === 'dark') {
+        document.body.style.background = '#18181b';
+        document.body.style.color = '#f3f4f6';
+        document.querySelector('.main').style.background = '#23272f';
+        document.querySelector('.main').style.boxShadow = '0 4px 32px rgba(0,0,0,0.25)';
+        document.querySelectorAll('.task').forEach(el => el.style.background = '#23272f');
+        document.querySelectorAll('.subtasks-dropdown').forEach(el => el.style.background = '#23272f');
+        document.querySelectorAll('.modal-content').forEach(el => el.style.background = '#23272f');
+        document.getElementById('themeToggleBtn').textContent = '☀️';
+      } else {
+        document.body.style.background = '#f7f8fa';
+        document.body.style.color = '#23272f';
+        document.querySelector('.main').style.background = '#fff';
+        document.querySelector('.main').style.boxShadow = '0 4px 32px rgba(0,0,0,0.07)';
+        document.querySelectorAll('.task').forEach(el => el.style.background = '#f7f8fa');
+        document.querySelectorAll('.subtasks-dropdown').forEach(el => el.style.background = '#f7f8fa');
+        document.querySelectorAll('.modal-content').forEach(el => el.style.background = '#fff');
+        document.getElementById('themeToggleBtn').textContent = '🌙';
+      }
+      localStorage.setItem('theme', mode);
+    }
+    document.getElementById('themeToggleBtn').addEventListener('click', function() {
+      const current = localStorage.getItem('theme') || 'light';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+    // On load, set theme
+    setTheme(localStorage.getItem('theme') || 'light');
+
+    // Drag-and-drop logic
+    let sectionDragIdx = null;
+    function startSectionDrag(e, idx) { sectionDragIdx = idx; e.dataTransfer.effectAllowed = 'move'; }
+    function sectionDragOver(e, idx) { e.preventDefault(); }
+    function endSectionDrag() { sectionDragIdx = null; }
+    function sectionDrop(e, idx) {
+      e.preventDefault();
+      let sections = getSections();
+      const [dragged] = sections.splice(sectionDragIdx, 1);
+      sections.splice(idx, 0, dragged);
+      setSections(sections);
+      renderSectionsDropdown();
+    }
+    let taskDragIdx = null;
+    function startTaskDrag(e, idx) { taskDragIdx = idx; e.dataTransfer.effectAllowed = 'move'; }
+    function taskDragOver(e, idx) { e.preventDefault(); }
+    function endTaskDrag() { taskDragIdx = null; }
+    function taskDrop(e, idx) {
+      e.preventDefault();
+      let tasks = getTasks();
+      const filtered = selectedSectionId === null ? tasks.filter(t => !t.sectionId) : tasks.filter(t => t.sectionId === selectedSectionId);
+      const allIdx = tasks.findIndex(t => t.id === filtered[taskDragIdx].id);
+      const [dragged] = tasks.splice(allIdx, 1);
+      const filteredIdx = tasks.findIndex(t => t.id === filtered[idx].id);
+      tasks.splice(filteredIdx, 0, dragged);
+      setTasks(tasks);
+      renderMainContent();
+    }
+    function editSection(id) {
+      let sections = getSections();
+      sections = sections.map(s => s.id === id ? { ...s, editing: true } : { ...s, editing: false });
+      setSections(sections);
+      renderSectionsDropdown();
+    }
+    function saveSectionEdit(id) {
+      let sections = getSections();
+      const input = document.getElementById(`editSectionInput-${id}`);
+      const newName = input.value.trim();
+      sections = sections.map(s => s.id === id ? { ...s, name: newName, editing: false } : s);
+      setSections(sections);
+      renderSectionsDropdown();
+    }
+    function setTaskDueDate(id, date) {
+      let tasks = getTasks();
+      tasks = tasks.map(t => t.id === id ? { ...t, dueDate: date } : t);
+      setTasks(tasks);
+      renderMainContent();
+    }
+    function deleteSubtask(taskId, idx) {
+      let tasks = getTasks();
+      tasks = tasks.map(t => t.id === taskId ? { ...t, subtasks: t.subtasks.filter((_, i) => i !== idx) } : t);
+      setTasks(tasks);
+      renderMainContent();
+    }
+
+    // Initial render
+    renderSectionsDropdown();
+    renderMainContent();
+
+    // PROOF: Add and delete a test section on load
+    window.addEventListener('DOMContentLoaded', function() {
+      let sections = getSections();
+      const testId = 'test-section-proof';
+      if (!sections.find(s => s.id === testId)) {
+        sections.push({ id: testId, name: 'Test Section (Proof)' });
+        setSections(sections);
+        renderSectionsDropdown();
+        renderMainContent();
+        // Delete the test section after a short delay
+        setTimeout(() => {
+          sections = getSections().filter(s => s.id !== testId);
+          setSections(sections);
+          let tasks = getTasks().filter(t => t.sectionId !== testId);
+          setTasks(tasks);
+          if (selectedSectionId === testId) selectedSectionId = null;
+          renderSectionsDropdown();
+          renderMainContent();
+        }, 1200);
+      }
+    });
+
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+
+    // PWA Install button logic
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = '';
+    });
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+    // Hide install button if already installed
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+    });
+  </script>
+</body>
+</html> 
